@@ -1,8 +1,10 @@
 name: Build and Push Files
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
-      - action_trail
+      - main
 
 jobs:
   build:
