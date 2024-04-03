@@ -49,7 +49,5 @@ jobs:
           cp -r ../build/* .
           git add .
           git commit -m "Add build contents"
-          git config user.name
-          git config user.email
-          git fetch
+          git push
           
