@@ -3,7 +3,7 @@ name: Merge Job
 on:
   push:
     branches:
-      - main
+      - actions_trail
 
 jobs:
   merge_job:
