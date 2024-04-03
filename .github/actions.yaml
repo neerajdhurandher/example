@@ -1,0 +1,35 @@
+name: Build and Push Files
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create build directory
+        run: mkdir build
+
+      - name: Create hello.txt file
+        run: echo "Hello world" > build/hello.txt
+
+      - name: Create error directory
+        run: mkdir build/error
+
+      - name: Create error.txt file
+        run: echo "Hello Error" > build/error/error.txt
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add build/
+          git commit -m "Add build files"
+          git push https://github.com/neerajdhurandher/git-practice github_actions
