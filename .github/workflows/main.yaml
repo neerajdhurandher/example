@@ -49,5 +49,7 @@ jobs:
           cp -r ../build/* .
           git add .
           git commit -m "Add build contents"
-          git push https://$GITHUB_TOKEN@github.com/neerajdhurandher/git-practice.git HEAD:${{ secrets.TARGET_BRANCH }}
+          git config user.name
+          git config user.email
+          git fetch
           
