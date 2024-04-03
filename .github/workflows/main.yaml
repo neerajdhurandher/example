@@ -11,25 +11,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Create build directory
-        run: mkdir build
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
 
-      - name: Create hello.txt file
-        run: echo "Hello world" > build/hello.txt
+    - name: Create build directory and files
+      run: |
+        mkdir build
+        echo "Hello world" > build/hello.txt
+        mkdir build/error
+        echo "Hello Error" > build/error/error.txt
+        cp -r build $GITHUB_WORKSPACE/build_temp
 
-      - name: Create error directory
-        run: mkdir build/error
+    - name: Upload build_temp to artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: build_files
+        path: $GITHUB_WORKSPACE/build_temp
 
-      - name: Create error.txt file
-        run: echo "Hello Error" > build/error/error.txt
+    - name: Checkout repo_2
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ secrets.USER_NAME }}/git-practice
+        ref: ${{ env.TARGET_BRANCH }}
 
-      - name: Commit and push changes
-        run: |
-          git config --global user.email ${{ secrets.USER_EMAIL }}
-          git config --global user.name ${{ secrets.USER_NAME }}
-          git add build/
-          git commit -m "Add build files"
-          git push https://${{ secrets.USER_NAME }}:${{ secrets.USER_TOKEN }}@github.com/neerajdhurandher/git-practice github_actions
+    - name: Install Git
+      run: sudo apt-get install git -y
+
+    - name: Copy files from build_temp to repo_2
+      run: |
+        cp -r ${{ github.workspace }}/build_temp/* ${{ github.workspace }}
+    
+    - name: Git Config
+      run: |
+        git config --local user.email ${{ secrets.USER_EMAIL }}
+        git config --local user.name ${{ secrets.USER_NAME }}
+
+    - name: Commit and Push changes
+      run: |
+        git add .
+        git commit -m "Add build files"
+        git push https://${{ secrets.USER_NAME }}:${{ secrets.USER_TOKEN }}@github.com/neerajdhurandher/git-practice ${{ env.TARGET_BRANCH }}
