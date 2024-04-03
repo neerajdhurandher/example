@@ -1,58 +1,46 @@
-name: Build and Push Files
+name: Merge Job
+
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - main
 
 jobs:
-  build:
+  merge_job:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout main branch
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+      - name: Create build directory and files
+        run: |
+          mkdir build
+          echo 'Hello world' > build/hello.txt
+          mkdir build/error
+          echo 'Hello Error' > build/error/error.txt
+          tar -cvf build.tar build
 
-    - name: Create build directory and files
-      run: |
-        mkdir build
-        echo "Hello world" > build/hello.txt
-        mkdir build/error
-        echo "Hello Error" > build/error/error.txt
-        cp -r build $GITHUB_WORKSPACE/build_temp
+      - name: Store build folder as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifact
+          path: build.tar
 
-    - name: Upload build_temp to artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: build_files
-        path: $GITHUB_WORKSPACE/build_temp
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: build-artifact
+          path: .
 
-    - name: Checkout repo_2
-      uses: actions/checkout@v2
-      with:
-        repository: ${{ secrets.USER_NAME }}/git-practice
-        ref: ${{ env.TARGET_BRANCH }}
-
-    - name: Install Git
-      run: sudo apt-get install git -y
-
-    - name: Copy files from build_temp to repo_2
-      run: |
-        cp -r ${{ github.workspace }}/build_temp/* ${{ github.workspace }}
-    
-    - name: Git Config
-      run: |
-        git config --local user.email ${{ secrets.USER_EMAIL }}
-        git config --local user.name ${{ secrets.USER_NAME }}
-
-    - name: Commit and Push changes
-      run: |
-        git add .
-        git commit -m "Add build files"
-        git push https://${{ secrets.USER_NAME }}:${{ secrets.USER_TOKEN }}@github.com/neerajdhurandher/git-practice ${{ env.TARGET_BRANCH }}
+      - name: Checkout repo_2 branch
+        run: |
+          git config user.email ${{ secrets.USER_EMAIL }}
+          git config user.name ${{ secrets.USER_NAME }}
+          git clone https://github.com/neerajdhurandher/git-practice.git
+          cd git-practice
+          git checkout github_actions
+          cp -r ../build/* .
+          git add .
+          git commit -m "Add build contents"
+          git push https://${{ secrets.USER_TOKEN }}@github.com/neerajdhurandher/git-practice.git HEAD:${{ vars.TARGET_BRANCH }}
