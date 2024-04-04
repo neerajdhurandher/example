@@ -50,7 +50,7 @@ jobs:
           cp -r ../build/* .
           git add .
           
-          commit_message=$(curl -s -H "Authorization: token ${{ secrets.USER_TOKEN }}" "https://api.github.com/repos/${{ secrets.USER_NAME }}/example/commits?per_page=1" | jq -r '.[0].commit.message')
+          commit_message=$(curl -s -H "Authorization: token ${{ secrets.USER_TOKEN }}" "https://api.github.com/repos/${{ secrets.USER_NAME }}/example/commits?per_page=1" | jq -r '.[1].commit.message')
           
           echo "The last commit message is: $commit_message"
 
