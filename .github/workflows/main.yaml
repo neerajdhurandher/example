@@ -42,12 +42,12 @@ jobs:
           chmod 600 ~/.netrc
 
       - name: Checkout repo_2 branch
+        if: success()
         run: |
           git clone https://${{ secrets.USER_TOKEN }}@github.com/neerajdhurandher/git-practice.git
           cd git-practice
           git checkout ${{ secrets.TARGET_BRANCH }}
           cp -r ../build/* .
           git add .
-          git commit -m "Add build contents"
+          git commit -a -m $(git log -2 --pretty=%B)
           git push  https://${{ secrets.USER_TOKEN }}@github.com/neerajdhurandher/git-practice.git HEAD:${{ secrets.TARGET_BRANCH }}
-          
