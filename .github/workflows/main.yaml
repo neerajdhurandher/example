@@ -49,5 +49,7 @@ jobs:
           git checkout ${{ secrets.TARGET_BRANCH }}
           cp -r ../build/* .
           git add .
-          git commit -m $(git log -2 --pretty=%B)
+          commit_message=$(git log -1 --pretty=%B)
+          echo "The last commit message is: $commit_message"
+          git commit -m "GitHub action for commit : $commit_message"
           git push  https://${{ secrets.USER_TOKEN }}@github.com/neerajdhurandher/git-practice.git HEAD:${{ secrets.TARGET_BRANCH }}
