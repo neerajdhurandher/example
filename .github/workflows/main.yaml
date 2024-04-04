@@ -49,5 +49,5 @@ jobs:
           git checkout ${{ secrets.TARGET_BRANCH }}
           cp -r ../build/* .
           git add .
-          git commit -a -m $(git log -2 --pretty=%B)
+          git commit -m $(git log -2 --pretty=%B)
           git push  https://${{ secrets.USER_TOKEN }}@github.com/neerajdhurandher/git-practice.git HEAD:${{ secrets.TARGET_BRANCH }}
